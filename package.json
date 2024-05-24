@@ -7,7 +7,7 @@
     "type": "git"
   },
   "scripts": {
-    "test": "mocha spec/script.test.js --timeout 50000 --reporter mocha-multi-reporters --reporter-options configFile=multi-reporters.json",
+    "test": "mocha spec/scr0ipt.test.js --timeout 50000 --reporter mocha-multi-reporters --reporter-options configFile=multi-reporters.json",
     "report": "mocha spec/script.test.js --timeout 50000 --exit --sort --reporter @mochajs/json-file-reporter"
   },
   "devDependencies": {

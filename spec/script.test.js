@@ -31,9 +31,9 @@ function test(window, expect) {
     bare(window, expect);
   });
   // ! Advanced Challenge test와 Nightmare test를 위해서는 아래 주석을 해제하세요.
-  // describe('Advanced Challenge test', function () {
-  //   advanced(window, expect);
-  // });
+  describe('Advanced Challenge test', function () {
+    advanced(window, expect);
+  });
   // describe('Nightmare test', function () {
   //   nightmare(window, expect);
   // });
