@@ -91,7 +91,8 @@ let firstNum, operatorForAdvanced, previousKey, previousNum;
 
 let numbers = [];
 let operators = [];
-let lastButton = "";
+let lastButton = "0";
+let result; let totalResult;
 buttons.addEventListener('click', function (event) {
   // 버튼을 눌렀을 때 작동하는 함수입니다.
 
@@ -104,64 +105,94 @@ buttons.addEventListener('click', function (event) {
   // ! 여기서부터 Advanced Challenge & Nightmare 과제룰 풀어주세요.
   if (target.matches('button')) {
     if (action === 'number') {
-      if("+-*/".indexOf(lastButton) !== -1){
-        lastButton = "";
-      }
-      if(display.textContent === '0'){
-        display.textContent = buttonContent;
-      }else{
-        display.textContent += buttonContent;
-      }  
-      lastButton += buttonContent; 
-    }
-    if (action === 'operator'){
-      if(lastButton !== "" && "+-*/".indexOf(lastButton) === -1){
+      if(lastButton !== result){
+        if("+-*/".indexOf(lastButton) !== -1){
+          lastButton = "";
+        }
         if(display.textContent === '0'){
           display.textContent = buttonContent;
+          lastButton = buttonContent;
         }else{
           display.textContent += buttonContent;
-        }
+          lastButton += buttonContent;
+        }  
+      } 
+    }
+    if (action === 'operator'){  
+      if("+-*/.".indexOf(lastButton) === -1){
+        display.textContent += buttonContent;
         numbers.push(Number(lastButton));
         operators.push(buttonContent);
-        lastButton = buttonContent;
+        
+      }else{
+        display.textContent = display.textContent.slice(0,display.textContent.length-1) + buttonContent;
+        //display.textContent.charAt(display.textContent.length-1) = buttonContent;
+        operators[operators.length-1] = buttonContent;
       }
+      lastButton = buttonContent;
     }
     if (action === 'decimal') {
-      if(lastButton !== '.'){
-        display.textContent += buttonContent;
+      if(lastButton.indexOf(".") === -1 && lastButton !== result){
+        let firstDigit = "";
+        if(display.textContent !== "0" && "+-*/".indexOf(lastButton) !== -1){
+          lastButton = "0";
+          firstDigit = "0";
+        }
+        display.textContent += firstDigit + buttonContent;
         lastButton += buttonContent;
       }
     }
     if (action === 'clear') {
       display.textContent = '0';
-      lastButton = "";
+      lastButton = "0";
       numbers = []; operators = [];
     }
     if (action === 'calculate') {
-      if("+-*/".indexOf(lastButton) === -1 && lastButton.charAt(lastButton.length-1) !== "."){
-        numbers.push(lastButton);
-      console.log(numbers);
-      console.log(operators);
+      if("+-*/.".indexOf(lastButton) === -1){
+        numbers.push(Number(lastButton));
+        console.log(numbers);
+        console.log(operators);
 
-      let result = Number(numbers[0]);
-      for(let i=0; i< operators.length; i++){
-        switch(operators[i]){
-          case '+':
-            result += Number(numbers[i+1]);
-            break;
-          case '-':
-            result -= Number(numbers[i+1]);
-            break;
-          case '*':
-            result *= Number(numbers[i+1]);
-            break;
-          case '/':
-            result /= Number(numbers[i+1]);
-            break;
+        totalResult = 0;  result = 0;
+        let mulDivMode = true;
+        while(operators.length > 0){
+          let mulDivFound = false;
+          let plusMinusFound = false;
+          for(let i = 0; i<operator.length; i++){         
+            if(mulDivMode){
+              if(operators[i] === "*"){
+                result = Number(numbers[i]) * Number(numbers[i+1]);
+                mulDivFound = true;
+              }else if(operators[i] === "/"){
+                result = Number(numbers[i]) / Number(numbers[i+1]);
+                mulDivFound = true;
+              }
+            }else{
+              if(operators[i] === "+"){
+                result = Number(numbers[i]) + Number(numbers[i+1]);
+                plusMinusFound = true;
+              }else if(operators[i] === "-"){
+                result = Number(numbers[i]) - Number(numbers[i+1]);
+                plusMinusFound = true;
+              }
+            }
+            if(mulDivFound || plusMinusFound){
+              numbers[i] = result;
+              numbers.splice(i+1, 1);
+              operators.splice(i, 1);
+              totalResult += result;
+              break;
+            }
+          }
+          if(!mulDivFound){
+            mulDivMode = false;
+          }
         }
+        totalResult = Math.round(result * 1000)/1000;
+        display.textContent = totalResult;
       }
-      display.textContent = result;
-      }
+      numbers = []; operators = [];
+      lastButton = totalResult;
     }
     console.log(lastButton);
   }
