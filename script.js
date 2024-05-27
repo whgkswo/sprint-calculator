@@ -199,7 +199,7 @@ buttons.addEventListener('click', function (event) {
         totalResult = Math.round(result * 1000)/1000;
         display.textContent = totalResult;
         numbers = []; operators = [];
-        lastButton = totalResult;
+        lastButton = String(totalResult);
       }
     }
     console.log(lastButton);
