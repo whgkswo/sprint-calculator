@@ -119,27 +119,33 @@ buttons.addEventListener('click', function (event) {
       } 
     }
     if (action === 'operator'){  
-      if("+-*/.".indexOf(lastButton) === -1){
-        display.textContent += buttonContent;
-        numbers.push(Number(lastButton));
-        operators.push(buttonContent);
-        
-      }else{
-        display.textContent = display.textContent.slice(0,display.textContent.length-1) + buttonContent;
-        //display.textContent.charAt(display.textContent.length-1) = buttonContent;
-        operators[operators.length-1] = buttonContent;
+      if(!lastButton.endsWith(".")){
+        if("+-*/".indexOf(lastButton) === -1){
+          display.textContent += buttonContent;
+          numbers.push(Number(lastButton));
+          operators.push(buttonContent);
+        }else{
+          display.textContent = display.textContent.slice(0,display.textContent.length-1) + buttonContent;
+          operators[operators.length-1] = buttonContent;
+        }
+        lastButton = buttonContent;
       }
-      lastButton = buttonContent;
     }
     if (action === 'decimal') {
-      if(lastButton.indexOf(".") === -1 && lastButton !== result){
-        let firstDigit = "";
-        if(display.textContent !== "0" && "+-*/".indexOf(lastButton) !== -1){
-          lastButton = "0";
-          firstDigit = "0";
+      if(lastButton.indexOf(".") === -1){
+        if(lastButton !== result){
+          let firstDigit = "";
+          if(display.textContent !== "0" && "+-*/".indexOf(lastButton) !== -1){
+            lastButton = "0";
+            firstDigit = "0";
+          }
+          display.textContent += firstDigit + buttonContent;
+          lastButton += buttonContent;
         }
-        display.textContent += firstDigit + buttonContent;
-        lastButton += buttonContent;
+      }else if(lastButton.endsWith(".")){
+        display.textContent = display.textContent.slice(0,display.textContent.length - lastButton.length);
+        lastButton = lastButton.slice(0,lastButton.length-1);
+        display.textContent += lastButton;
       }
     }
     if (action === 'clear') {
@@ -150,29 +156,30 @@ buttons.addEventListener('click', function (event) {
     if (action === 'calculate') {
       if("+-*/.".indexOf(lastButton) === -1){
         numbers.push(Number(lastButton));
-        console.log(numbers);
-        console.log(operators);
+        //console.log(numbers);
+        //console.log(operators);
 
         totalResult = 0;  result = 0;
         let mulDivMode = true;
         while(operators.length > 0){
           let mulDivFound = false;
           let plusMinusFound = false;
-          for(let i = 0; i<operator.length; i++){         
+          let lastIndex = 0;
+          for(let i = lastIndex; i<operators.length; i++){         
             if(mulDivMode){
               if(operators[i] === "*"){
-                result = Number(numbers[i]) * Number(numbers[i+1]);
+                result = numbers[i] * numbers[i+1];
                 mulDivFound = true;
               }else if(operators[i] === "/"){
-                result = Number(numbers[i]) / Number(numbers[i+1]);
+                result = numbers[i] / numbers[i+1];
                 mulDivFound = true;
               }
             }else{
               if(operators[i] === "+"){
-                result = Number(numbers[i]) + Number(numbers[i+1]);
+                result = numbers[i] + numbers[i+1];
                 plusMinusFound = true;
               }else if(operators[i] === "-"){
-                result = Number(numbers[i]) - Number(numbers[i+1]);
+                result = numbers[i] - numbers[i+1];
                 plusMinusFound = true;
               }
             }
@@ -181,6 +188,7 @@ buttons.addEventListener('click', function (event) {
               numbers.splice(i+1, 1);
               operators.splice(i, 1);
               totalResult += result;
+              lastIndex = i;
               break;
             }
           }
@@ -190,9 +198,9 @@ buttons.addEventListener('click', function (event) {
         }
         totalResult = Math.round(result * 1000)/1000;
         display.textContent = totalResult;
+        numbers = []; operators = [];
+        lastButton = totalResult;
       }
-      numbers = []; operators = [];
-      lastButton = totalResult;
     }
     console.log(lastButton);
   }
